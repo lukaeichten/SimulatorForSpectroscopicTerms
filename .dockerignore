@@ -1,0 +1,11 @@
+.git
+.github
+.idea
+.vscode
+target
+dist
+crates/wasm/pkg
+**/node_modules
+web/dist
+docs/build
+docs/.docusaurus

@@ -1,0 +1,104 @@
+---
+sidebar_position: 2
+title: Using the simulator
+description: Entering an electron configuration and reading the three result panels.
+---
+
+import AppLink from "@site/src/components/AppLink";
+
+# Using the simulator
+
+## Entering a configuration
+
+The bar at the top has one field per subshell:
+
+| Field | Subshell | Electrons |
+| ----- | -------- | --------- |
+| `s`   | $l = 0$  | 0 to 2    |
+| `p`   | $l = 1$  | 0 to 6    |
+| `d`   | $l = 2$  | 0 to 10   |
+| `f`   | $l = 3$  | 0 to 14   |
+
+Enter the number of electrons in each subshell and press **Simulate** (or <kbd>Enter</kbd>).
+Leave the other fields at 0. For example, carbon's ground configuration 1s² 2s² 2p² only needs
+`p = 2` because the filled 1s and 2s subshells do not change the terms.
+
+The results appear immediately, even for the largest configuration
+(<AppLink query="s=1&p=3&d=5&f=7">s¹ p³ d⁵ f⁷</AppLink> with 34 594 560 microstates).
+
+## Possibilities
+
+The first panel lists for every subshell how many electrons it holds and in how many ways they
+can be placed into its spin orbitals. For $n$ electrons in a subshell with $N$ spin orbitals this
+is the binomial coefficient $\binom{N}{n}$. The last row, **Total**, is the product of all rows:
+the number of microstates of the configuration.
+
+## Terms
+
+The second panel lists the terms of the configuration:
+
+| Column                 | Meaning                                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| **#**                  | Number of the term, used to select it and in shared links.                              |
+| **L**                  | Total orbital angular momentum quantum number.                                         |
+| **S**                  | Total spin quantum number (an integer or a half-integer such as 3⁄2).                   |
+| **Count**              | How often the term occurs. d³, for example, contains the term ²D twice.                 |
+| **Spectroscopic term** | The term symbol for each possible $J$ from $\lvert L - S\rvert$ to $L + S$.             |
+
+The terms are ordered by decreasing $S$ and, for equal $S$, by decreasing $L$. This is the order
+in which they are found by the [microstate table method](./method.mdx). For a single open subshell,
+the first term is therefore the ground term predicted by Hund's rules. The order of the other
+terms says nothing about their energies.
+
+### Filtering the configurations by terms
+
+Click a term (or select it with the keyboard and press <kbd>Enter</kbd>) to list only the
+microstates that can belong to it: those with $|M_L| \le L$ and $|M_S| \le S$. These are the cells
+of the term's box in the [microstate table](./method.mdx#step-3-the-microstate-table). Select
+several terms to combine their boxes. Click a selected term again, or press **Clear filter**, to
+remove it from the filter.
+
+:::note
+
+The boxes of different terms overlap, so a microstate usually fits several terms. The filter
+shows which microstates *can* contribute to a term, not an exclusive assignment. Individual
+microstates are in general not states of a single term (see
+[What a term consists of](./method.mdx#what-a-term-consists-of)).
+
+:::
+
+## Configurations
+
+The third panel lists the microstates of the configuration, 1000 per page. Each row is one
+microstate:
+
+| Column                   | Meaning                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| **#**                    | Position in the list. Hover over it to see the position among all microstates. |
+| **s**, **p₋₁** … **f₃**  | The occupation of the orbital with the given $m_l$.                            |
+| **M_L**, **M_S**         | The projections of the microstate.                                             |
+
+The orbital occupations use these symbols:
+
+| Symbol | Occupation                                   |
+| ------ | -------------------------------------------- |
+| ↿      | One electron with spin up ($m_s = +\tfrac12$)  |
+| ⇂      | One electron with spin down ($m_s = -\tfrac12$) |
+| ⥮      | Two electrons with opposite spins             |
+| empty  | No electron                                  |
+
+The microstates are listed in a fixed order: within a subshell, electrons are placed in the
+lowest $m_l$ first and with spin up first; the s subshell changes slowest and the f subshell
+fastest.
+
+Use the buttons above and below the table to move between pages, or type a page number. On wide
+screens the panel stays in view while you scroll through a long term list.
+
+## Navigation and appearance
+
+- The browser's **back** and **forward** buttons step through previous simulations, filters and
+  pages.
+- **Copy link** copies a link to exactly what you see; see [Sharing a simulation](./sharing-links.md).
+- The switch in the header chooses the colour theme: **Auto** follows the light or dark mode of
+  your operating system or browser, **Light** and **Dark** fix the theme. The choice is
+  remembered in this browser and also applies to the documentation.

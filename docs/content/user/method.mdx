@@ -1,0 +1,309 @@
+---
+sidebar_position: 4
+title: How the terms are derived
+description: The microstate table method for Russell–Saunders (LS) coupling, with worked examples.
+---
+
+import AppLink from "@site/src/components/AppLink";
+
+# How the terms are derived
+
+The simulator uses the **microstate table method** (also called the *method of microstates*) to
+find the terms of an electron configuration in **Russell–Saunders coupling** (LS coupling). This
+page explains the method step by step, with p², d² and p³ as worked examples. Every number on
+this page can be reproduced with the simulator.
+
+## Background
+
+### Quantum numbers of one electron
+
+An electron in a subshell with orbital quantum number $l$ is described by its magnetic quantum
+number $m_l \in \{-l, \dots, +l\}$ and its spin quantum number $m_s \in \{+\tfrac12, -\tfrac12\}$.
+A pair $(m_l, m_s)$ is a **spin orbital**. A subshell therefore has $2l + 1$ orbitals and
+$2(2l + 1)$ spin orbitals:
+
+| Subshell | $l$ | $m_l$                | Spin orbitals |
+| -------- | --- | -------------------- | ------------- |
+| s        | 0   | 0                    | 2             |
+| p        | 1   | −1, 0, +1            | 6             |
+| d        | 2   | −2 … +2              | 10            |
+| f        | 3   | −3 … +3              | 14            |
+
+### Russell–Saunders coupling
+
+In Russell–Saunders coupling the orbital angular momenta of the electrons combine into a total
+orbital angular momentum $L$, and the spins combine into a total spin $S$. The states with the same
+$L$ and $S$ form a **term**, written
+
+$$
+^{2S+1}L
+$$
+
+where $2S + 1$ is the **multiplicity** and $L$ is written as a letter:
+
+| $L$    | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| ------ | - | - | - | - | - | - | - | - | - | - | -- |
+| Letter | S | P | D | F | G | H | I | K | L | M | N  |
+
+The letter J is skipped; after N the sequence continues with O, Q, R, T, U, … The spin–orbit
+interaction splits a term into **levels** with total angular momentum
+
+$$
+J = |L - S|,\; |L - S| + 1,\; \dots,\; L + S,
+$$
+
+written $^{2S+1}L_J$. Each level consists of $2J + 1$ states.
+
+### Filled subshells do not matter
+
+In a completely filled subshell every spin orbital is occupied, so there is exactly one
+microstate, with $M_L = 0$ and $M_S = 0$: a single ¹S term. Filled subshells therefore do not
+change the terms of a configuration, and only the open subshells have to be considered.
+
+## Step 1: Count the microstates
+
+A **microstate** is one way to place the electrons into spin orbitals. By the Pauli principle each
+spin orbital holds at most one electron. For $n$ electrons in a subshell with $N = 2(2l + 1)$ spin
+orbitals, the number of microstates is the number of ways to choose $n$ of the $N$ spin orbitals:
+
+$$
+\binom{N}{n} = \frac{N!}{n!\,(N - n)!}
+$$
+
+For p² this gives $\binom{6}{2} = 15$ microstates. If several subshells are open, every microstate
+of one subshell can be combined with every microstate of the others, so the numbers multiply:
+s¹ p¹ has $\binom{2}{1} \cdot \binom{6}{1} = 12$ microstates.
+
+The simulator shows these numbers in the **Possibilities** panel.
+
+## Step 2: Projections of every microstate
+
+For every microstate, add up the quantum numbers of its electrons:
+
+$$
+M_L = \sum_i m_{l,i}, \qquad M_S = \sum_i m_{s,i}
+$$
+
+These are the 15 microstates of p² (↿ spin up, ⇂ spin down, ⥮ two electrons), listed in the same
+order as in the simulator (<AppLink query="p=2">open p²</AppLink>):
+
+<div className="microstate-table">
+
+| #  | $m_l = -1$ | $m_l = 0$ | $m_l = +1$ | $M_L$ | $M_S$ |
+| -- | ---------- | --------- | ---------- | ----- | ----- |
+| 1  | ⥮          |           |            | −2    | 0     |
+| 2  | ↿          | ↿         |            | −1    | 1     |
+| 3  | ↿          | ⇂         |            | −1    | 0     |
+| 4  | ↿          |           | ↿          | 0     | 1     |
+| 5  | ↿          |           | ⇂          | 0     | 0     |
+| 6  | ⇂          | ↿         |            | −1    | 0     |
+| 7  | ⇂          | ⇂         |            | −1    | −1    |
+| 8  | ⇂          |           | ↿          | 0     | 0     |
+| 9  | ⇂          |           | ⇂          | 0     | −1    |
+| 10 |            | ⥮         |            | 0     | 0     |
+| 11 |            | ↿         | ↿          | 1     | 1     |
+| 12 |            | ↿         | ⇂          | 1     | 0     |
+| 13 |            | ⇂         | ↿          | 1     | 0     |
+| 14 |            | ⇂         | ⇂          | 1     | −1    |
+| 15 |            |           | ⥮          | 2     | 0     |
+
+</div>
+
+## Step 3: The microstate table
+
+Count how many microstates have each combination of $M_L$ and $M_S$. For p²:
+
+<div className="microstate-table">
+
+| $M_L$ \ $M_S$ | +1 | 0 | −1 |
+| ------------- | -- | - | -- |
+| +2            | 0  | 1 | 0  |
+| +1            | 1  | 2 | 1  |
+| 0             | 1  | 3 | 1  |
+| −1            | 1  | 2 | 1  |
+| −2            | 0  | 1 | 0  |
+
+</div>
+
+The entries add up to 15, the number of microstates.
+
+## Step 4: Split the table into terms
+
+### What a term consists of
+
+A term $^{2S+1}L$ consists of $(2L + 1)(2S + 1)$ states: one for every combination of
+
+$$
+M_L \in \{-L, \dots, +L\} \quad\text{and}\quad M_S \in \{-S, \dots, +S\}.
+$$
+
+In the microstate table, a term therefore occupies a rectangle (its **box**) centred on
+$M_L = 0$, $M_S = 0$, with exactly one state in every cell of the box. The states of a term are in
+general not single microstates but combinations of the microstates *in the same cell*. For finding
+the terms this does not matter: only the number of states per cell counts, and it equals the
+number of microstates per cell.
+
+### The procedure
+
+1. Find the largest $M_S$ that still has microstates in the table. In that column, find the
+   largest $M_L$ with a non-zero entry. These values are $S$ and $L$ of a term.
+2. The entry $k$ of that cell is how often the term occurs. Usually $k = 1$.
+3. Remove $k$ microstates from every cell of the box $|M_L| \le L$, $|M_S| \le S$.
+4. Repeat until the table is empty.
+
+Choosing the largest $M_S$ and then the largest $M_L$ guarantees that the remaining entries in that
+cell cannot belong to a larger box, so the cell really starts a new term.
+
+### Example: p²
+
+The largest $M_S$ is 1. In that column the largest $M_L$ is 1, so the first term has $S = 1$,
+$L = 1$: **³P**. Removing its 3 × 3 box (one microstate from each cell with $|M_L| \le 1$,
+$|M_S| \le 1$) leaves:
+
+<div className="microstate-table">
+
+| $M_L$ \ $M_S$ | +1 | 0 | −1 |
+| ------------- | -- | - | -- |
+| +2            | 0  | 1 | 0  |
+| +1            | 0  | 1 | 0  |
+| 0             | 0  | 2 | 0  |
+| −1            | 0  | 1 | 0  |
+| −2            | 0  | 1 | 0  |
+
+</div>
+
+Now the largest $M_S$ is 0 and the largest $M_L$ in that column is 2: **¹D**. Removing its box
+(one microstate from each cell with $|M_L| \le 2$, $M_S = 0$) leaves a single microstate at
+$M_L = 0$, $M_S = 0$: **¹S**.
+
+The terms of p² are **³P, ¹D and ¹S**, with the levels ³P₀, ³P₁, ³P₂, ¹D₂ and ¹S₀.
+
+### Shortcut: one quarter of the table
+
+The table is symmetric: the entry for $(M_L, M_S)$ equals the entries for $(-M_L, M_S)$,
+$(M_L, -M_S)$ and $(-M_L, -M_S)$. It is therefore enough to work with the quarter
+$M_L \ge 0$, $M_S \ge 0$. A box then covers the cells with $0 \le M_L \le L$ and $0 \le M_S \le S$.
+The simulator always lists all microstates.
+
+### Example: d²
+
+d² has $\binom{10}{2} = 45$ microstates (<AppLink query="d=2">open d²</AppLink>). The quarter of
+the table, with entries written as "$M_S = +1$ / $M_S = 0$", and how it changes after removing each
+term:
+
+<div className="microstate-table">
+
+| $M_L$ | Start | after ³F | after ³P | after ¹G | after ¹D | after ¹S |
+| ----- | ----- | -------- | -------- | -------- | -------- | -------- |
+| 4     | 0 / 1 | 0 / 1    | 0 / 1    | 0 / 0    | 0 / 0    | 0 / 0    |
+| 3     | 1 / 2 | 0 / 1    | 0 / 1    | 0 / 0    | 0 / 0    | 0 / 0    |
+| 2     | 1 / 3 | 0 / 2    | 0 / 2    | 0 / 1    | 0 / 0    | 0 / 0    |
+| 1     | 2 / 4 | 1 / 3    | 0 / 2    | 0 / 1    | 0 / 0    | 0 / 0    |
+| 0     | 2 / 5 | 1 / 4    | 0 / 3    | 0 / 2    | 0 / 1    | 0 / 0    |
+
+</div>
+
+1. $M_S = 1$, largest $M_L = 3$: **³F**, removed from $M_L \le 3$ in both columns.
+2. $M_S = 1$, largest remaining $M_L = 1$: **³P**, removed from $M_L \le 1$ in both columns.
+3. $M_S = 0$, largest $M_L = 4$: **¹G**, removed from $M_L \le 4$ in the $M_S = 0$ column.
+4. $M_S = 0$, largest remaining $M_L = 2$: **¹D**.
+5. $M_S = 0$, $M_L = 0$: **¹S**.
+
+The terms of d² are **³F, ³P, ¹G, ¹D and ¹S**.
+
+### Example: p³ (half-integer spin)
+
+With an odd number of electrons, $M_S$ and $S$ are half-integers. p³ has $\binom{6}{3} = 20$
+microstates (<AppLink query="p=3">open p³</AppLink>). The quarter of the table, with entries
+written as "$M_S = +\tfrac32$ / $M_S = +\tfrac12$":
+
+<div className="microstate-table">
+
+| $M_L$ | Start | after ⁴S | after ²D | after ²P |
+| ----- | ----- | -------- | -------- | -------- |
+| 2     | 0 / 1 | 0 / 1    | 0 / 0    | 0 / 0    |
+| 1     | 0 / 2 | 0 / 2    | 0 / 1    | 0 / 0    |
+| 0     | 1 / 3 | 0 / 2    | 0 / 1    | 0 / 0    |
+
+</div>
+
+1. $M_S = \tfrac32$, largest $M_L = 0$: **⁴S**, removed from $M_L = 0$ in both columns.
+2. $M_S = \tfrac12$, largest $M_L = 2$: **²D**, removed from $M_L \le 2$ in the $M_S = \tfrac12$
+   column.
+3. $M_S = \tfrac12$, largest remaining $M_L = 1$: **²P**.
+
+The terms of p³ are **⁴S, ²D and ²P**.
+
+### Terms that occur more than once
+
+Sometimes the cell found in step 1 still holds more than one microstate. In d³
+(<AppLink query="d=3">open d³</AppLink>), after removing ⁴F, ⁴P, ²H, ²G and ²F, the cell
+$M_L = 2$, $M_S = \tfrac12$ holds 2 microstates. The term ²D therefore occurs twice, and two
+microstates are removed from every cell of its box. The simulator shows this in the **Count**
+column.
+
+## Checking the result
+
+Every microstate belongs to exactly one term, so
+
+$$
+\sum_{\text{terms}} \text{count} \cdot (2L + 1)(2S + 1) = \text{number of microstates}.
+$$
+
+For p²: $9 + 5 + 1 = 15$. For d²: $21 + 9 + 9 + 5 + 1 = 45$. In the same way, the levels of a
+term account for all of its states: $\sum_J (2J + 1) = (2L + 1)(2S + 1)$. For ³P:
+$1 + 3 + 5 = 9$.
+
+## Useful facts
+
+### Electrons and holes
+
+A subshell with $n$ electrons has the same terms as the same subshell with $n$ missing electrons
+(holes): $N - n$ electrons. p² and p⁴ both give ³P, ¹D and ¹S; d² and d⁸ both give ³F, ³P, ¹G,
+¹D and ¹S.
+
+### Several open subshells
+
+The method works unchanged if electrons occupy different subshells: the microstates combine all
+subshells, and the table is built from the totals. For electrons in different subshells
+(*non-equivalent* electrons) the Pauli principle never forbids a combination, and the terms can
+also be found by coupling the angular momenta directly. For s¹ p¹, $L = 1$ and $S = 0$ or $1$ give
+³P and ¹P, the same result as the microstate table.
+
+### The ground term: Hund's rules
+
+For a configuration with one open subshell, Hund's rules predict the term and level with the
+lowest energy:
+
+1. The ground term has the largest possible $S$.
+2. Among the terms with that $S$, it has the largest $L$.
+3. If the subshell is less than half full, the level with the smallest $J = |L - S|$ is lowest; if
+   it is more than half full, the level with the largest $J = L + S$ is lowest.
+
+Because the simulator lists the terms by decreasing $S$ and then decreasing $L$, the first term in
+its list is the term chosen by rules 1 and 2. For p² this is ³P, and rule 3 gives the ground
+level ³P₀. Hund's rules only identify the ground term; they do not order the other terms by
+energy.
+
+## How the simulator does it
+
+The simulator follows exactly these steps. To handle configurations with millions of microstates,
+it builds the microstate table of each subshell separately and combines them by counting, without
+listing every microstate first. The details are described in the
+[developer guide](../developer/core-crate.md).
+
+## Further reading
+
+- *Finding Microstates and Term Symbols*, Inorganic Chemistry (LibreTexts),
+  [chem.libretexts.org](https://chem.libretexts.org/Bookshelves/Inorganic_Chemistry/Inorganic_Chemistry_(LibreTexts)/11:_Coordination_Chemistry_III_-_Electronic_Spectra/11.02:_Quantum_Numbers_of_Multielectron_Atoms/11.2.01:_Finding_Microstates_and_Term_Symbols).
+  The microstate table method with d² as example, and Hund's rules.
+- G. L. Miessler, P. J. Fischer, D. A. Tarr, *Inorganic Chemistry*, Pearson. Chapter on the
+  electronic spectra of coordination compounds.
+- P. Atkins, J. de Paula, *Physical Chemistry*, Oxford University Press. Chapter on atomic
+  structure and spectra.
+- E. U. Condon, G. H. Shortley, *The Theory of Atomic Spectra*, Cambridge University Press, 1935.
+  The classic reference, with tables of the terms of all equivalent-electron configurations.
+- J. C. Slater, "The Theory of Complex Spectra", *Physical Review* **34**, 1293 (1929). The
+  original treatment of many-electron terms using microstates.
+- NIST Atomic Spectra Database, [physics.nist.gov/asd](https://physics.nist.gov/asd). Measured
+  energy levels, for example the terms ⁴S, ²D and ²P of the nitrogen ground configuration 2p³.

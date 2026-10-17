@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Simulator for spectroscopic terms: derives the term symbols of an electron configuration by enumerating all of its microstates."
+    />
+    <title>Simulator for spectroscopic terms</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <script>
+      // Apply the stored theme (or the operating system's colour scheme) before the first
+      // paint. Mirrors parseThemePreference and resolveTheme in src/ui/theme.ts.
+      (() => {
+        let stored = null;
+        try {
+          stored = localStorage.getItem("theme");
+        } catch {
+          // Storage unavailable: follow the operating system.
+        }
+        const dark =
+          stored === "dark" ||
+          (stored !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.dataset.bsTheme = dark ? "dark" : "light";
+      })();
+    </script>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <header class="app-header">
+      <div
+        class="container-xl d-flex flex-column flex-md-row align-items-center justify-content-between gap-2 py-3"
+      >
+        <div class="text-center text-md-start">
+          <h1 class="h3 mb-0">Simulator for spectroscopic terms</h1>
+          <p class="app-header-subtitle mb-0">
+            Find all term symbols of an electron configuration and the microstates behind them
+          </p>
+        </div>
+        <div class="d-flex flex-wrap align-items-center justify-content-center gap-2">
+          <div
+            id="theme-switch"
+            class="btn-group btn-group-sm"
+            role="radiogroup"
+            aria-label="Colour theme"
+          ></div>
+          <a class="btn btn-sm app-header-link" href="./docs/">Documentation</a>
+        </div>
+      </div>
+    </header>
+
+    <nav id="toolbar" class="navbar app-toolbar sticky-top">
+      <div class="container-xl">
+        <form
+          id="configuration-form"
+          class="d-flex flex-wrap gap-2 mx-auto"
+          aria-label="Electron configuration"
+        ></form>
+      </div>
+    </nav>
+
+    <main class="container-xl py-3 flex-grow-1">
+      <div id="notices"></div>
+      <div id="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Loading the simulator…</p>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-lg-4 d-flex flex-column gap-3">
+          <section class="card app-card" aria-labelledby="possibilities-title">
+            <h2 id="possibilities-title" class="card-header h6">Possibilities</h2>
+            <table class="table table-sm mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Subshell</th>
+                  <th scope="col">Electrons</th>
+                  <th scope="col" class="text-end">Possibilities</th>
+                </tr>
+              </thead>
+              <tbody id="possibilities-body"></tbody>
+            </table>
+          </section>
+
+          <section class="card app-card" aria-labelledby="terms-title">
+            <div class="card-header d-flex align-items-center justify-content-between gap-2">
+              <h2 id="terms-title" class="h6 mb-0">Terms</h2>
+              <button
+                id="terms-clear"
+                type="button"
+                class="btn btn-sm btn-outline-primary py-0"
+                hidden
+              >
+                Clear filter
+              </button>
+            </div>
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">L</th>
+                  <th scope="col">S</th>
+                  <th scope="col">Count</th>
+                  <th scope="col">Spectroscopic term</th>
+                </tr>
+              </thead>
+              <tbody id="terms-body"></tbody>
+            </table>
+            <p class="card-footer small text-body-secondary mb-0">
+              Select terms to list only the configurations that can belong to them.
+            </p>
+          </section>
+        </div>
+
+        <div class="col-lg-8">
+          <section class="card app-card configurations-card" aria-labelledby="configurations-title">
+            <div
+              class="card-header d-flex flex-wrap align-items-baseline justify-content-between gap-2"
+            >
+              <h2 id="configurations-title" class="h6 mb-0">Configurations</h2>
+              <span id="configurations-summary" class="small text-body-secondary"></span>
+            </div>
+            <div id="pagination-top" class="card-body py-2 border-bottom" hidden></div>
+            <div id="configurations-scroller" class="table-responsive configurations-scroller">
+              <table class="table table-sm table-striped text-center mb-0 configurations-table">
+                <thead id="configurations-head" class="sticky-top"></thead>
+                <tbody id="configurations-body"></tbody>
+              </table>
+            </div>
+            <div id="pagination-bottom" class="card-body py-2 border-top" hidden></div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer text-center small py-3">
+      <p class="mb-1">
+        Found a problem? Please report it on the
+        <a href="https://github.com/lukaeichten/SimulatorForSpectroscopicTerms/issues"
+          >issue tracker</a
+        >.
+      </p>
+      <p class="mb-0">
+        <a href="./docs/">Documentation</a>
+        ·
+        <a href="https://github.com/lukaeichten/SimulatorForSpectroscopicTerms">Source code</a>
+        · MIT License
+      </p>
+    </footer>
+
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

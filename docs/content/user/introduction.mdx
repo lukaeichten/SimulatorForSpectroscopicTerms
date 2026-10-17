@@ -1,0 +1,42 @@
+---
+sidebar_position: 1
+title: Introduction
+description: What the simulator for spectroscopic terms does and the words it uses.
+---
+
+import AppLink from "@site/src/components/AppLink";
+
+# Introduction
+
+The simulator determines the **spectroscopic terms** (term symbols such as ³P or ²D) of an
+electron configuration such as p² or d³. It does so the same way the terms are derived on paper:
+it lists every possible arrangement of the electrons, counts the arrangements by their total
+angular momentum projections and splits these counts into terms.
+
+The simulator runs entirely in your browser. Nothing is installed and nothing is sent to a
+server. <AppLink>Open the simulator</AppLink> or try a ready-made example:
+<AppLink query="p=2">p²</AppLink>, <AppLink query="d=3">d³</AppLink> or
+<AppLink query="s=1&p=1">s¹ p¹</AppLink>.
+
+## What you see
+
+The page has three panels. They are explained in detail in
+[Using the simulator](./using-the-simulator.mdx).
+
+| Panel              | Shows                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------- |
+| **Possibilities**  | How many ways the electrons can be placed in each subshell, and how many microstates exist in total. |
+| **Terms**          | Every term of the configuration with `L`, `S`, how often it occurs and its levels `J`.     |
+| **Configurations** | Every microstate with its orbital occupations and its projections `M_L` and `M_S`.          |
+
+## Words used in this documentation
+
+- **Electron configuration**: The number of electrons in each subshell, for example p² (two electrons in a p subshell). The simulator has one s, p, d and f subshell. Completely filled subshells do not change the terms and can be left out.
+- **Spin orbital**: An orbital together with a spin direction. An orbital with magnetic quantum number $m_l$ can hold one electron with spin up ($m_s = +\tfrac12$) and one with spin down ($m_s = -\tfrac12$).
+- **Microstate**: One way to place all electrons of the configuration into spin orbitals, respecting the Pauli principle (at most one electron per spin orbital). The simulator calls the microstates of the whole configuration **configurations** in its table.
+- **Projections $M_L$ and $M_S$**: The sums of $m_l$ and of $m_s$ over all electrons of a microstate.
+- **Term**: A group of states with the same total orbital angular momentum $L$ and total spin $S$, written $^{2S+1}L$ (for example ³P for $L = 1$, $S = 1$).
+- **Level**: A term split by the total angular momentum $J$, written $^{2S+1}L_J$ (for example ³P₂).
+
+How the terms follow from the microstates is explained step by step in
+[How the terms are derived](./method.mdx).

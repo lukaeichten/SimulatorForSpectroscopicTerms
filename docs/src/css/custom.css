@@ -1,0 +1,85 @@
+/*
+ * Same palette as the simulator (web/src/styles.css): indigo primary, teal accent and slate
+ * neutrals. Infima needs the primary colour in seven shades.
+ */
+:root {
+  --ifm-color-primary: #4338ca;
+  --ifm-color-primary-dark: #3c32b6;
+  --ifm-color-primary-darker: #392fac;
+  --ifm-color-primary-darkest: #2f278d;
+  --ifm-color-primary-light: #5146d7;
+  --ifm-color-primary-lighter: #5a50d9;
+  --ifm-color-primary-lightest: #756ddf;
+  --ifm-background-color: #f8f9fc;
+  --ifm-navbar-background-color: #ffffff;
+  --ifm-code-font-size: 92%;
+  --ifm-table-stripe-background: rgb(67 56 202 / 3%);
+  --docusaurus-highlighted-code-line-bg: rgb(67 56 202 / 10%);
+  --app-accent: #0f766e;
+  --app-header-gradient: linear-gradient(120deg, #312e81 0%, #4338ca 55%, #0f766e 100%);
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #818cf8;
+  --ifm-color-primary-dark: #6875f6;
+  --ifm-color-primary-darker: #5b69f5;
+  --ifm-color-primary-darkest: #3346f3;
+  --ifm-color-primary-light: #9aa3fa;
+  --ifm-color-primary-lighter: #a7affa;
+  --ifm-color-primary-lightest: #ced3fc;
+  --ifm-background-color: #0d1120;
+  --ifm-navbar-background-color: #161b2e;
+  --ifm-table-stripe-background: rgb(129 140 248 / 5%);
+  --docusaurus-highlighted-code-line-bg: rgb(129 140 248 / 15%);
+  --app-accent: #2dd4bf;
+  --app-header-gradient: linear-gradient(120deg, #1e1b4b 0%, #312e81 55%, #134e4a 100%);
+}
+
+.navbar {
+  border-top: 3px solid var(--ifm-color-primary);
+}
+
+/* Long formulas scroll instead of overflowing on small screens. */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+
+/* Tables with numbers (microstate tables) are centred and use aligned digits. */
+.microstate-table table {
+  font-variant-numeric: tabular-nums;
+}
+.microstate-table td,
+.microstate-table th {
+  text-align: center;
+}
+
+/* Landing page. */
+.hero--app {
+  background: var(--app-header-gradient);
+  color: #fff;
+}
+.hero--app .hero__subtitle {
+  color: rgb(255 255 255 / 85%);
+}
+.guide-cards {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+.guide-card {
+  border-top: 3px solid var(--ifm-color-primary);
+  height: 100%;
+}
+.guide-card--developer {
+  border-top-color: var(--app-accent);
+}
+.card-link,
+.card-link:hover {
+  color: inherit;
+  text-decoration: none;
+}
+.card-link:hover .guide-card {
+  box-shadow: var(--ifm-global-shadow-tl);
+}

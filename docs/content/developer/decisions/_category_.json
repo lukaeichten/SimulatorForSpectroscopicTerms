@@ -1,0 +1,8 @@
+{
+  "label": "Decision records",
+  "position": 10,
+  "link": {
+    "type": "generated-index",
+    "description": "Architecture decision records: the important decisions behind the project, why they were made and what they imply. Each record has a status, the context, the decision and its consequences."
+  }
+}
