@@ -213,7 +213,7 @@ mod tests {
         assert_eq!(SubshellState::enumerate(SubshellKind::P, 2).len(), 15);
         assert_eq!(SubshellState::enumerate(SubshellKind::F, 7).len(), 3432);
         assert_eq!(SubshellState::enumerate(SubshellKind::S, 0).len(), 1);
-        assert!(SubshellState::enumerate(SubshellKind::S, 3).is_empty());
+        assert_eq!(SubshellState::enumerate(SubshellKind::S, 3), Vec::new());
     }
 
     #[test]
