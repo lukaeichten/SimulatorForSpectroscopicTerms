@@ -4,7 +4,7 @@
 # Compiles the simulator to WebAssembly and builds the static site (simulator and documentation).
 # The output does not depend on the CPU architecture, so this stage always runs natively on the
 # build machine.
-FROM --platform=$BUILDPLATFORM node:24-bookworm-slim AS build
+FROM --platform=$BUILDPLATFORM node:26-bookworm-slim AS build
 
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
