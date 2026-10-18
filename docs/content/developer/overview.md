@@ -20,7 +20,7 @@ backend.
 ## Getting started
 
 ```bash
-npm ci              # installs the dependencies of all npm workspaces
+npm ci              # installs the dependencies of all npm workspaces and the Git hook
 npm run dev         # simulator on http://localhost:5173 (builds the wasm package first)
 ```
 
@@ -29,6 +29,9 @@ npm run dev         # simulator on http://localhost:5173 (builds the wasm packag
 server, so the *Documentation* link works on port 5173. Use `npm run dev:web` or
 `npm run dev:docs` to start only one of them. After changing Rust code, run
 `npm run wasm:dev --workspace web` (or restart `npm run dev`) to rebuild the WebAssembly package.
+
+`npm ci` also installs a pre-commit hook that checks the formatting and lint of the staged
+files; see [Git hook](./testing.md#git-hook).
 
 ## Commands
 
@@ -62,6 +65,7 @@ Run from the repository root:
 ├── docker/              nginx configuration of the Docker image
 ├── Dockerfile
 ├── Cargo.toml           Rust workspace
+├── lefthook.yml         Pre-commit hook
 ├── package.json         npm workspaces (web, docs)
 └── rust-toolchain.toml
 ```

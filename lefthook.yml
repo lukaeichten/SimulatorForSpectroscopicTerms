@@ -1,0 +1,21 @@
+# Git hooks, installed by `npm install` / `npm ci` (https://lefthook.dev).
+# Only fast checks of the staged files run before a commit; clippy, the tests and the builds run
+# in CI. Skip the hook once with `git commit --no-verify`.
+pre-commit:
+  parallel: true
+  jobs:
+    - name: rustfmt
+      glob: "*.rs"
+      run: cargo fmt --all --check
+      fail_text: "Run `cargo fmt --all` and stage the changes."
+
+    - name: prettier
+      root: "web/"
+      glob: "*.{ts,js,json,css,html,md}"
+      run: npx --no-install prettier --check {staged_files}
+      fail_text: "Run `npm run format --workspace web` and stage the changes."
+
+    - name: eslint
+      root: "web/"
+      glob: "*.{ts,js}"
+      run: npx --no-install eslint {staged_files}

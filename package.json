@@ -21,7 +21,8 @@
   },
   "allowScripts": {
     "wasm-pack@0.15.0": true,
-    "core-js": false
+    "core-js": false,
+    "lefthook": true
   },
   "overrides": {
     "katex": "^0.19.0",
@@ -31,5 +32,8 @@
       "uuid": "^11.1.1"
     },
     "tinypool": "^2.2.0"
+  },
+  "devDependencies": {
+    "lefthook": "^2.2.2"
   }
 }

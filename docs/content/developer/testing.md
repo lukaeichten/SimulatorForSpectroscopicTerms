@@ -34,6 +34,35 @@ npm test
   Node.js and checks the API contract (DTO shapes, filtering, paging, error handling). It needs
   the wasm package, which `npm test` builds first.
 
+## Git hook
+
+A pre-commit hook, managed by [Lefthook](https://lefthook.dev) and configured in `lefthook.yml`,
+checks the staged files before each commit. It only runs fast checks (about two seconds), in
+parallel:
+
+| Check    | Files                                  | Fix                                |
+| -------- | -------------------------------------- | ---------------------------------- |
+| rustfmt  | staged `*.rs`                          | `cargo fmt --all`                  |
+| Prettier | staged files in `web/`                 | `npm run format --workspace web`   |
+| ESLint   | staged `*.ts` and `*.js` in `web/`     | fix the reported problems          |
+
+The checks only report problems and never change files; fix them, stage the changes and commit
+again. Clippy, the tests and the builds take longer and run in
+[continuous integration](#continuous-integration) instead.
+
+`npm install` and `npm ci` install the hook automatically (the root `package.json` allows
+Lefthook's install script under `allowScripts`). In CI and in the Docker build the installation
+is skipped. Further commands:
+
+```bash
+npx lefthook install                         # (re)install the hook manually
+npx lefthook run pre-commit --all-files      # run the checks on all files
+git commit --no-verify                       # skip the hook once
+```
+
+The hook uses the local Rust toolchain. If it is older than the latest stable release used in
+CI, newer clippy lints only show up in CI; `rustup update stable` keeps them in sync.
+
 ## Continuous integration
 
 `.github/workflows/ci.yml` runs on every push to `main` and on pull requests:
