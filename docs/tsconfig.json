@@ -2,7 +2,11 @@
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
     "noEmit": true,
-    "strict": true
+    "strict": true,
+    "baseUrl": null,
+    "paths": {
+      "@site/*": ["./*"]
+    }
   },
   "exclude": [".docusaurus", "build"]
 }
