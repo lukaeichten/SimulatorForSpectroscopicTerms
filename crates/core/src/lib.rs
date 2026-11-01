@@ -17,6 +17,7 @@
 //! assert_eq!(simulation.microstate_count(), 15);
 //! ```
 
+mod assignment;
 mod configuration;
 mod filter;
 mod half_integer;
@@ -27,8 +28,9 @@ mod simulation;
 mod subshell;
 mod term;
 
+pub use assignment::TermAssignment;
 pub use configuration::{ConfigurationError, ElectronConfiguration};
-pub use filter::{AcceptAll, MicrostateFilter, TermFilter};
+pub use filter::{AcceptAll, AssignedTermFilter, MicrostateFilter, TermFilter};
 pub use half_integer::HalfInteger;
 pub use histogram::MicrostateHistogram;
 pub use microstate::Microstate;

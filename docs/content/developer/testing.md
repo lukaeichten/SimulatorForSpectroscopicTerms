@@ -16,9 +16,14 @@ cargo test --workspace
 - **`crates/core/tests/textbook_terms.rs`** compares derived terms with textbook results (p², p³,
   d², d³, d⁵, s¹ p¹, p¹ d¹, …) and checks for many configurations that the terms account for every
   microstate exactly once: $\sum \text{count} \cdot (2L+1)(2S+1) = N$, where $N$ is the number of
-  microstates.
-- **Simulation tests** check that paging and filtering return the same microstates as a full
-  enumeration, and that the largest configuration is handled without enumerating it.
+  microstates. It also checks the term assignment: for many configurations, every term with count
+  $k$ gets exactly $k$ microstates in each cell of its box and none outside (s¹ p¹: 9 for ³P, 3
+  for ¹P).
+- **Assignment tests** in `assignment.rs` check that the ranks of a cell are handed out without
+  gaps or overlaps and that `term_at` agrees with `ranks`.
+- **Simulation tests** check that paging and filtering (by box and by assignment) return the same
+  microstates as a full enumeration, that random access and the walk agree on the assigned term,
+  and that the largest configuration is handled without enumerating it.
 - **Documentation tests**: the example in the crate documentation is compiled and run.
 
 ## Frontend
@@ -29,9 +34,13 @@ npm test
 
 [Vitest](https://vitest.dev) runs:
 
-- unit tests of the pure modules (`query.test.ts`, `format.test.ts`);
+- unit tests of the pure modules (`query.test.ts`, `format.test.ts`, `colour.test.ts`,
+  `term-colours.test.ts`). The term colour tests check that the 133 colours of the largest
+  configuration are distinct, keep away from the theme hues and stay separated by a minimum OKLab
+  distance, and that the theme colours in `term-colours.ts` match `styles.css`;
 - `simulator-service.test.ts`, an integration test that loads the real WebAssembly module in
-  Node.js and checks the API contract (DTO shapes, filtering, paging, error handling). It needs
+  Node.js and checks the API contract (DTO shapes, exact and box filtering, assigned terms,
+  paging, error handling). It needs
   the wasm package, which `npm test` builds first.
 
 ## Git hook

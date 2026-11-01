@@ -56,6 +56,8 @@ export interface MicrostateInfo {
     subshells: Occupancy[][];
     ml: number;
     ms: number;
+    /** Zero-based index into the term list of the term this microstate is assigned to. */
+    term: number;
 }
 
 export interface MicrostatePage {
@@ -181,6 +183,7 @@ pub struct MicrostateInfo {
     subshells: Vec<Vec<Occupancy>>,
     ml: i32,
     ms: f64,
+    term: usize,
 }
 
 impl MicrostateInfo {
@@ -195,6 +198,7 @@ impl MicrostateInfo {
                 .collect(),
             ml: microstate.orbital_projection(),
             ms: microstate.spin_projection().to_f64(),
+            term: microstate.term(),
         }
     }
 }

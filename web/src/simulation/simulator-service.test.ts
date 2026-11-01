@@ -34,13 +34,28 @@ describe("SimulatorService", () => {
     expect(run.terms[0]).toMatchObject({ orbital: 1, spin: 1, totalAngularMomenta: [0, 1, 2] });
   });
 
-  it("pages and filters the configurations", () => {
+  it("pages and filters the configurations by term box", () => {
     const run = new SimulatorService().simulate([0, 3, 0, 0]);
-    const page = run.microstatePage([0], 1, 2);
+    const page = run.microstatePage([0], false, 1, 2);
     expect(page).toMatchObject({ pageIndex: 1, pageSize: 2, totalItems: 8, pageCount: 4 });
     expect(page.items.map((item) => item.position)).toEqual([3, 4]);
     expect(page.items.every((item) => item.ml === 0)).toBe(true);
     expect(page.items[0]?.subshells[1]).toHaveLength(3);
+  });
+
+  it("assigns every configuration of s1 p1 to exactly one term", () => {
+    const run = new SimulatorService().simulate([1, 1, 0, 0]);
+    const total = (terms: number[], exact: boolean) =>
+      run.microstatePage(terms, exact, 0, 100).totalItems;
+    expect(total([0], true)).toBe(9);
+    expect(total([1], true)).toBe(3);
+    expect(total([0], false)).toBe(12);
+    expect(total([1], false)).toBe(6);
+
+    const terms = run.microstatePage([], true, 0, 100).items.map((item) => item.term);
+    expect(terms).toHaveLength(12);
+    expect(terms.filter((term) => term === 0)).toHaveLength(9);
+    expect(terms.filter((term) => term === 1)).toHaveLength(3);
   });
 
   it("reuses the last run and rejects invalid configurations", () => {

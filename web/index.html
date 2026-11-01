@@ -91,9 +91,13 @@
                 class="btn btn-sm btn-outline-primary py-0"
                 hidden
               >
-                Clear filter
+                Clear selection
               </button>
             </div>
+            <div
+              id="term-display"
+              class="card-body py-2 border-bottom d-flex flex-wrap align-items-center gap-3"
+            ></div>
             <table class="table table-sm table-hover mb-0">
               <thead>
                 <tr>
@@ -106,8 +110,8 @@
               </thead>
               <tbody id="terms-body"></tbody>
             </table>
-            <p class="card-footer small text-body-secondary mb-0">
-              Select terms to list only the configurations that can belong to them.
+            <p id="terms-help" class="card-footer small text-body-secondary mb-0">
+              Select terms to list exactly the microstates assigned to them.
             </p>
           </section>
         </div>

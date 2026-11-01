@@ -50,19 +50,37 @@ in which they are found by the [microstate table method](./method.mdx). For a si
 the first term is therefore the ground term predicted by Hund's rules. The order of the other
 terms says nothing about their energies.
 
-### Filtering the configurations by terms
+### Which microstates belong to a term
 
-Click a term (or select it with the keyboard and press <kbd>Enter</kbd>) to list only the
-microstates that can belong to it: those with $|M_L| \le L$ and $|M_S| \le S$. These are the cells
-of the term's box in the [microstate table](./method.mdx#step-3-the-microstate-table). Select
-several terms to combine their boxes. Click a selected term again, or press **Clear filter**, to
-remove it from the filter.
+Every microstate is assigned to exactly one term. A term $^{2S+1}L$ that occurs $k$ times gets
+$k$ microstates from every cell of its box in the
+[microstate table](./method.mdx#step-3-the-microstate-table), $k \cdot (2L + 1)(2S + 1)$ in total.
+How the simulator picks them is explained in
+[Which microstate belongs to which term](./method.mdx#which-microstate-belongs-to-which-term).
+The **Term** column of the configurations table shows the assigned term of every microstate.
+
+Click a term (or select it with the keyboard and press <kbd>Enter</kbd>) to select it. Select
+several terms to combine them. Click a selected term again, or press **Clear selection**, to
+remove it. The buttons above the term list choose what the selection does:
+
+- **Filter** (default): only the microstates assigned to the selected terms are listed. For
+  s¹ p¹, selecting ³P lists 9 microstates and ¹P lists 3. Turn on **Include every microstate that
+  can belong** to list every microstate inside the box of a selected term instead
+  ($|M_L| \le L$ and $|M_S| \le S$): 12 for ³P and 6 for ¹P. The boxes of different terms overlap,
+  so with this switch a microstate can appear for several terms.
+- **Colour** (<AppLink query="s=1&p=1&view=colour">example</AppLink>): every microstate is listed
+  and its row is tinted with the colour of its term. The colour of each term is shown as a small
+  square next to its number in the term list. Selecting terms highlights only their rows; the
+  others stay uncoloured. Every term has its own colour, chosen to be as different as possible
+  from the colours of the terms before it. A term keeps its colour as long as its number stays
+  the same. With many terms some colours are necessarily similar; the Term column always names
+  the term.
 
 :::note
 
-The boxes of different terms overlap, so a microstate usually fits several terms. The filter
-shows which microstates *can* contribute to a term, not an exclusive assignment. Individual
-microstates are in general not states of a single term (see
+The assignment is a representative bookkeeping choice. Within a cell, all microstates are
+equivalent for finding the terms, so any of them could be chosen for a term. Physically, the
+states of a term are combinations of the microstates of a cell, not single microstates (see
 [What a term consists of](./method.mdx#what-a-term-consists-of)).
 
 :::
@@ -77,6 +95,7 @@ microstate:
 | **#**                    | Position in the list. Hover over it to see the position among all microstates. |
 | **s**, **p₋₁** … **f₃**  | The occupation of the orbital with the given $m_l$.                            |
 | **M_L**, **M_S**         | The projections of the microstate.                                             |
+| **Term**                 | The term the microstate is assigned to (without $J$).                          |
 
 The orbital occupations use these symbols:
 
@@ -96,8 +115,8 @@ screens the panel stays in view while you scroll through a long term list.
 
 ## Navigation and appearance
 
-- The browser's **back** and **forward** buttons step through previous simulations, filters and
-  pages.
+- The browser's **back** and **forward** buttons step through previous simulations, term
+  selections, views and pages.
 - **Copy link** copies a link to exactly what you see; see [Sharing a simulation](./sharing-links.md).
 - The switch in the header chooses the colour theme: **Auto** follows the light or dark mode of
   your operating system or browser, **Light** and **Dark** fix the theme. The choice is

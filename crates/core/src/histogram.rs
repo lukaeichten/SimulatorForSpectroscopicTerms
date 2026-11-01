@@ -117,6 +117,45 @@ impl MicrostateHistogram {
         }
     }
 
+    /// Returns a histogram with the same grid as `self` in which every cell is empty.
+    #[must_use]
+    pub(crate) fn zeroed_like(&self) -> Self {
+        Self::zeroed(self.max_ml, self.max_ms_twice)
+    }
+
+    /// Adds every cell `(a, b, n)` of `other` to the cell `(a + ml, b + ms)` of `self`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if a shifted cell lies outside the grid of `self`.
+    pub(crate) fn add_shifted(&mut self, other: &Self, ml: i32, ms: HalfInteger) {
+        for (other_ml, other_ms, count) in other.cells() {
+            *self.count_mut(ml + other_ml, (ms + other_ms).twice()) += count;
+        }
+    }
+
+    /// Adds one microstate to the cell `(ml, ms)`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the cell lies outside the grid.
+    pub(crate) fn increment(&mut self, ml: i32, ms: HalfInteger) {
+        *self.count_mut(ml, ms.twice()) += 1;
+    }
+
+    /// Returns the position of the cell `(ml, ms)` in the dense grid, or `None` if it lies
+    /// outside. Positions range over `0..cell_count()`.
+    #[must_use]
+    pub(crate) fn cell_index(&self, ml: i32, ms: HalfInteger) -> Option<usize> {
+        self.index(ml, ms.twice())
+    }
+
+    /// Returns the number of cells of the dense grid, including the empty ones.
+    #[must_use]
+    pub(crate) fn cell_count(&self) -> usize {
+        self.counts.len()
+    }
+
     fn zeroed(max_ml: i32, max_ms_twice: i32) -> Self {
         let rows = usize::try_from(2 * max_ml + 1).expect("max_ml is not negative");
         let columns = usize::try_from(2 * max_ms_twice + 1).expect("max_ms is not negative");
@@ -173,5 +212,50 @@ mod tests {
         assert_eq!(pd.total(), 60);
         assert_eq!(pd.count(3, HalfInteger::from_integer(1)), 1);
         assert_eq!(MicrostateHistogram::identity().convolve(&pd), pd);
+    }
+
+    #[test]
+    fn zeroed_like_keeps_the_grid() {
+        let p2 = MicrostateHistogram::from_states(&SubshellState::enumerate(SubshellKind::P, 2));
+        let empty = p2.zeroed_like();
+        assert_eq!(empty.total(), 0);
+        assert_eq!(empty.max_ml(), p2.max_ml());
+        assert_eq!(empty.max_ms(), p2.max_ms());
+        assert_eq!(empty.cell_count(), p2.cell_count());
+    }
+
+    #[test]
+    fn adds_shifted_histograms_and_single_microstates() {
+        let pd = MicrostateHistogram::from_states(&SubshellState::enumerate(SubshellKind::P, 1))
+            .convolve(&MicrostateHistogram::from_states(
+                &SubshellState::enumerate(SubshellKind::D, 1),
+            ));
+        let d = MicrostateHistogram::from_states(&SubshellState::enumerate(SubshellKind::D, 1));
+        let mut sum = pd.zeroed_like();
+        sum.add_shifted(&d, -1, HalfInteger::HALF);
+        assert_eq!(sum.total(), d.total());
+        assert_eq!(sum.count(-3, HalfInteger::from_integer(1)), 1);
+        assert_eq!(sum.count(1, HalfInteger::ZERO), 1);
+        assert_eq!(sum.count(2, HalfInteger::ZERO), 0);
+
+        sum.increment(1, HalfInteger::ZERO);
+        assert_eq!(sum.count(1, HalfInteger::ZERO), 2);
+        assert_eq!(sum.total(), d.total() + 1);
+    }
+
+    #[test]
+    fn cell_indices_are_unique_and_dense() {
+        let p2 = MicrostateHistogram::from_states(&SubshellState::enumerate(SubshellKind::P, 2));
+        let grid = &p2;
+        let mut indices: Vec<_> = (-2..=2)
+            .flat_map(|ml| {
+                (-2..=2).map(move |ms_twice| grid.cell_index(ml, HalfInteger::from_twice(ms_twice)))
+            })
+            .map(Option::unwrap)
+            .collect();
+        indices.sort_unstable();
+        assert_eq!(indices, (0..p2.cell_count()).collect::<Vec<_>>());
+        assert_eq!(p2.cell_index(3, HalfInteger::ZERO), None);
+        assert_eq!(p2.cell_index(0, HalfInteger::from_integer(2)), None);
     }
 }

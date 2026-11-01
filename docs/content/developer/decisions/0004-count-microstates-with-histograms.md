@@ -25,5 +25,7 @@ of $(M_L, M_S)$.
 
 - Simulations and pages are computed in milliseconds, independent of the number of microstates,
   and memory use stays small.
-- Filters that need other properties of a microstate (for example the occupation of a specific
-  orbital) cannot use the skipping and would need a different approach.
+- Filters may also depend on the rank of a microstate within its cell $(M_L, M_S)$ (see
+  [0006](./0006-assign-microstates-to-terms-by-rank.md)). Filters that need other properties of a
+  microstate (for example the occupation of a specific orbital) still cannot use the skipping and
+  would need a different approach.

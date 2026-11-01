@@ -29,15 +29,18 @@ export class SimulationRun {
    * Returns one page of configurations (microstates).
    *
    * @param termIndices zero-based indices of the terms used as filter; empty lists everything
+   * @param exact `true` lists the configurations assigned to the terms, `false` every
+   *   configuration that can belong to them (inside the box `|M_L| ≤ L`, `|M_S| ≤ S`)
    * @param pageIndex zero-based page index; pages beyond the end yield the last page
    * @param pageSize number of configurations per page
    */
   microstatePage(
     termIndices: readonly number[],
+    exact: boolean,
     pageIndex: number,
     pageSize: number,
   ): MicrostatePage {
-    return this.simulator.microstatePage(Uint32Array.from(termIndices), pageIndex, pageSize);
+    return this.simulator.microstatePage(Uint32Array.from(termIndices), exact, pageIndex, pageSize);
   }
 
   /** Releases the memory held by the WebAssembly module. */

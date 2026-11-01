@@ -1,14 +1,27 @@
 /**
- * Encoding of a simulation run in the query string, e.g. `?p=2&d=1&term=1&term=3&page=2`.
+ * Encoding of a simulation run in the query string, e.g.
+ * `?p=2&d=1&term=1&term=3&view=colour&match=box&page=2`.
  *
  * - One parameter per subshell symbol (`s`, `p`, `d`, `f`) holds its electron count; `0` is the
  *   default and is omitted.
- * - `term` (repeatable) selects terms by their one-based position in the term list; only the
- *   configurations that may belong to one of the selected terms are listed.
+ * - `term` (repeatable) selects terms by their one-based position in the term list.
+ * - `view` is `filter` (default: the selected terms filter the configuration list) or `colour`
+ *   (every configuration is listed and tinted by its term; the selected terms are highlighted).
+ * - `match` is `exact` (default: the configurations assigned to the selected terms) or `box`
+ *   (every configuration that can belong to them). Only the filter view uses it.
  * - `page` is the one-based page of the configuration list; `1` is the default and is omitted.
  *
  * The module is pure (no DOM access) so it can be unit tested and reused.
  */
+
+/** How the selected terms affect the configuration list. */
+export type TermView = "filter" | "colour";
+
+/** Which configurations the filter view lists for the selected terms. */
+export type TermMatch = "exact" | "box";
+
+export const TERM_VIEWS: readonly TermView[] = ["filter", "colour"];
+export const TERM_MATCHES: readonly TermMatch[] = ["exact", "box"];
 
 /** The parameters of one simulation run. */
 export interface SimulationQuery {
@@ -16,6 +29,9 @@ export interface SimulationQuery {
   readonly electrons: readonly number[];
   /** Selected terms as one-based indices into the term list, ascending and unique. */
   readonly terms: readonly number[];
+  readonly view: TermView;
+  /** Kept in the colour view (where it has no effect) so switching back restores it. */
+  readonly match: TermMatch;
   /** One-based page of the configuration list. */
   readonly page: number;
 }
@@ -34,11 +50,22 @@ export interface ParsedQuery {
 }
 
 export const TERM_PARAMETER = "term";
+export const VIEW_PARAMETER = "view";
+export const MATCH_PARAMETER = "match";
 export const PAGE_PARAMETER = "page";
+
+const DEFAULT_VIEW: TermView = "filter";
+const DEFAULT_MATCH: TermMatch = "exact";
 
 /** Returns the query of an empty configuration. */
 export function defaultQuery(subshells: readonly SubshellLimit[]): SimulationQuery {
-  return { electrons: subshells.map(() => 0), terms: [], page: 1 };
+  return {
+    electrons: subshells.map(() => 0),
+    terms: [],
+    view: DEFAULT_VIEW,
+    match: DEFAULT_MATCH,
+    page: 1,
+  };
 }
 
 /**
@@ -75,6 +102,9 @@ export function parseQuery(
     }
   }
 
+  const view = parseChoice(parameters, VIEW_PARAMETER, TERM_VIEWS, DEFAULT_VIEW, problems);
+  const match = parseChoice(parameters, MATCH_PARAMETER, TERM_MATCHES, DEFAULT_MATCH, problems);
+
   let page = 1;
   const rawPage = parameters.get(PAGE_PARAMETER);
   if (rawPage !== null && rawPage !== "") {
@@ -86,7 +116,7 @@ export function parseQuery(
     }
   }
 
-  return { query: { electrons, terms: sortedUnique(terms), page }, problems };
+  return { query: { electrons, terms: sortedUnique(terms), view, match, page }, problems };
 }
 
 /** Encodes a query as a query string without the leading `?`, omitting default values. */
@@ -100,6 +130,12 @@ export function formatQuery(query: SimulationQuery, subshells: readonly Subshell
   });
   for (const term of sortedUnique(query.terms)) {
     parameters.append(TERM_PARAMETER, String(term));
+  }
+  if (query.view !== DEFAULT_VIEW) {
+    parameters.set(VIEW_PARAMETER, query.view);
+  }
+  if (query.match !== DEFAULT_MATCH) {
+    parameters.set(MATCH_PARAMETER, query.match);
   }
   if (query.page !== 1) {
     parameters.set(PAGE_PARAMETER, String(query.page));
@@ -116,12 +152,46 @@ export function restrictTerms(query: SimulationQuery, termCount: number): Parsed
   return { query: { ...query, terms: valid }, problems };
 }
 
-/** Returns the query with the term toggled and the page reset to the first one. */
+/**
+ * Returns the query with the term toggled. In the filter view the list changes, so the page is
+ * reset to the first one; in the colour view only the highlighting changes, so the page is kept.
+ */
 export function toggleTerm(query: SimulationQuery, term: number): SimulationQuery {
   const terms = query.terms.includes(term)
     ? query.terms.filter((selected) => selected !== term)
     : [...query.terms, term];
-  return { ...query, terms: sortedUnique(terms), page: 1 };
+  const page = query.view === "filter" ? 1 : query.page;
+  return { ...query, terms: sortedUnique(terms), page };
+}
+
+/** Returns the query with another view, keeping the selected terms, on the first page. */
+export function setView(query: SimulationQuery, view: TermView): SimulationQuery {
+  return { ...query, view, page: 1 };
+}
+
+/** Returns the query with another match mode, on the first page. */
+export function setMatch(query: SimulationQuery, match: TermMatch): SimulationQuery {
+  return { ...query, match, page: 1 };
+}
+
+/** Reads a parameter that must be one of `choices`; missing and invalid values yield `fallback`. */
+function parseChoice<T extends string>(
+  parameters: URLSearchParams,
+  name: string,
+  choices: readonly T[],
+  fallback: T,
+  problems: string[],
+): T {
+  const raw = parameters.get(name);
+  if (raw === null || raw === "") {
+    return fallback;
+  }
+  const choice = choices.find((candidate) => candidate === raw);
+  if (choice === undefined) {
+    problems.push(`Ignored ${name}=${raw}: expected ${choices.join(" or ")}.`);
+    return fallback;
+  }
+  return choice;
 }
 
 function parseNonNegativeInteger(raw: string): number | undefined {
