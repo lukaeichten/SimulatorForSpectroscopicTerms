@@ -6,7 +6,9 @@
 mod dto;
 
 use serde::Serialize;
-use simulator_core::{ElectronConfiguration, PageRequest, Simulation, SubshellKind, TermFilter};
+use simulator_core::{
+    AssignedTermFilter, ElectronConfiguration, PageRequest, Simulation, SubshellKind, TermFilter,
+};
 use wasm_bindgen::prelude::*;
 
 use crate::dto::{MicrostatePage, SubshellKindInfo, Summary, TermInfo};
@@ -84,8 +86,10 @@ impl Simulator {
 
     /// Returns one page of microstates.
     ///
-    /// `term_indices` are zero-based indices into [`Simulator::terms`]; if given, only the
-    /// microstates that may belong to one of these terms are listed. A page index beyond the
+    /// `term_indices` are zero-based indices into [`Simulator::terms`]; if given, only some
+    /// microstates are listed. With `exact`, these are the microstates assigned to one of the
+    /// terms (see [`simulator_core::TermAssignment`]); otherwise every microstate inside the box
+    /// of one of the terms, i.e. every microstate that can belong to it. A page index beyond the
     /// last page returns the last page.
     ///
     /// # Errors
@@ -95,6 +99,7 @@ impl Simulator {
     pub fn microstate_page(
         &self,
         term_indices: &[u32],
+        exact: bool,
         page_index: u32,
         page_size: u32,
     ) -> Result<JsValue, JsError> {
@@ -113,7 +118,13 @@ impl Simulator {
         }
 
         let request = PageRequest::new(u64::from(page_index), page_size as usize);
-        let page = self.simulation.page(&TermFilter::new(selected), request);
+        let page = if exact {
+            let indices = term_indices.iter().map(|&index| index as usize);
+            let filter = AssignedTermFilter::new(self.simulation.assignment(), indices);
+            self.simulation.page(&filter, request)
+        } else {
+            self.simulation.page(&TermFilter::new(selected), request)
+        };
         to_js(&MicrostatePage::from(&page))
     }
 }

@@ -1,6 +1,8 @@
 //! Checks derived terms against well-known textbook results.
 
-use simulator_core::{ElectronConfiguration, Simulation, SubshellKind};
+use std::collections::HashMap;
+
+use simulator_core::{AcceptAll, ElectronConfiguration, HalfInteger, Simulation, SubshellKind};
 
 /// Formats the terms of a configuration like `3P 1D 2x2D` (count prefix only if above one).
 fn terms(electrons: [usize; 4]) -> String {
@@ -69,4 +71,47 @@ fn half_filled_f_shell_ground_term() {
     );
     assert_eq!(simulation.terms()[0].to_string(), "8S");
     assert_eq!(simulation.microstate_count(), 3432);
+}
+
+#[test]
+fn assignment_gives_each_term_count_microstates_per_cell() {
+    for electrons in [
+        [1, 1, 0, 0],
+        [0, 2, 0, 0],
+        [0, 3, 0, 0],
+        [0, 0, 2, 0],
+        [0, 0, 3, 0],
+        [0, 0, 5, 0],
+        [1, 2, 1, 0],
+        [0, 1, 1, 0],
+        [0, 0, 0, 3],
+    ] {
+        let simulation = Simulation::new(ElectronConfiguration::new(electrons).unwrap());
+        let mut tally: HashMap<(usize, i32, HalfInteger), u64> = HashMap::new();
+        for microstate in simulation.microstates(&AcceptAll, 0, usize::MAX) {
+            let key = (
+                microstate.term(),
+                microstate.orbital_projection(),
+                microstate.spin_projection(),
+            );
+            *tally.entry(key).or_default() += 1;
+        }
+        for (index, term) in simulation.terms().iter().enumerate() {
+            for (ml, ms, _) in simulation.histogram().cells() {
+                let expected = if term.admits(ml, ms) { term.count() } else { 0 };
+                let actual = tally.get(&(index, ml, ms)).copied().unwrap_or(0);
+                assert_eq!(actual, expected, "{electrons:?}, {term} at ({ml}, {ms})");
+            }
+        }
+    }
+}
+
+#[test]
+fn s1_p1_assigns_nine_microstates_to_3p_and_three_to_1p() {
+    let simulation = Simulation::new(ElectronConfiguration::new([1, 1, 0, 0]).unwrap());
+    let terms: Vec<_> = simulation.terms().iter().map(ToString::to_string).collect();
+    assert_eq!(terms, ["3P", "1P"]);
+    let microstates = simulation.microstates(&AcceptAll, 0, usize::MAX);
+    assert_eq!(microstates.iter().filter(|m| m.term() == 0).count(), 9);
+    assert_eq!(microstates.iter().filter(|m| m.term() == 1).count(), 3);
 }

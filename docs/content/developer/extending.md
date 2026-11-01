@@ -20,7 +20,8 @@ is cheap for g ($2^{18}$), but much larger subshells would need a combination ge
 
 Implement `MicrostateFilter` in the core crate, add a way to construct it to
 `crates/wasm/src/lib.rs` and a matching query parameter in `web/src/simulation/query.ts`. Counting
-and paging work for every filter that only depends on $(M_L, M_S)$.
+and paging work for every filter that only depends on the cell $(M_L, M_S)$ and the rank of a
+microstate within it (see [Core crate](./core-crate.md#filters)).
 
 ## A new view
 

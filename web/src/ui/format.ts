@@ -1,6 +1,7 @@
 /** Formatting of physical quantities for display. */
 import type { Occupancy, TermInfo } from "../simulation/simulator-service";
 import { el, fragment, type Child } from "./dom";
+import { termColour } from "./term-colours";
 
 /** Arrow glyphs of the orbital occupations. */
 export const OCCUPANCY_SYMBOLS: Readonly<Record<Occupancy, string>> = {
@@ -68,6 +69,21 @@ export function halfInteger(value: number): Node {
 /** Formats a term symbol without `J`, e.g. `3P`, for plain text contexts. */
 export function termText(term: TermInfo): string {
   return `${term.multiplicity}${term.letter}`;
+}
+
+/** Renders a term symbol without `J`, e.g. ³P. */
+export function termLabel(term: TermInfo): Node {
+  return el("span", { class: "term-symbol" }, el("sup", {}, term.multiplicity), term.letter);
+}
+
+/**
+ * Gives an element the colour of the term with the given zero-based index, as the CSS variable
+ * `--term-colour` used by the swatches and the row tint. The colour is set through the CSSOM
+ * rather than a `style` attribute, which a Content Security Policy without `unsafe-inline`
+ * would block.
+ */
+export function applyTermColour(element: HTMLElement, index: number): void {
+  element.style.setProperty("--term-colour", termColour(index));
 }
 
 /** Renders the term symbols `^{2S+1}L_J` for every possible `J`, separated by commas. */

@@ -18,7 +18,7 @@ description: The simulator-wasm crate that exposes the core to JavaScript.
 | `new Simulator(electrons: Uint32Array)`              | A simulation; throws if a subshell is overfilled.        |
 | `simulator.summary()`                                | States per subshell and the total number of microstates. |
 | `simulator.terms()`                                  | All terms.                                               |
-| `simulator.microstatePage(termIndices, page, size)`  | One page of microstates, filtered by zero-based term indices. |
+| `simulator.microstatePage(termIndices, exact, page, size)` | One page of microstates, filtered by zero-based term indices: with `exact` the assigned microstates, otherwise every microstate inside a term's box. |
 | `simulator.free()`                                   | Releases the WebAssembly memory of the simulation.       |
 
 ## Data transfer objects

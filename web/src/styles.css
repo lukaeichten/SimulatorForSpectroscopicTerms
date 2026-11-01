@@ -16,6 +16,7 @@
   --app-border: #e2e6f0;
   --app-header-gradient: linear-gradient(120deg, #312e81 0%, #4338ca 55%, #0f766e 100%);
   --app-shadow: 0 1px 2px rgb(15 23 42 / 6%), 0 4px 12px rgb(15 23 42 / 4%);
+  --term-tint-strength: 28%;
 }
 
 [data-bs-theme="dark"] {
@@ -30,6 +31,8 @@
   --app-border: #273049;
   --app-header-gradient: linear-gradient(120deg, #1e1b4b 0%, #312e81 55%, #134e4a 100%);
   --app-shadow: 0 1px 2px rgb(0 0 0 / 40%);
+  /* A dark surface swallows more of the colour, so the tint needs more of it to stay visible. */
+  --term-tint-strength: 35%;
 }
 
 :root,
@@ -188,6 +191,17 @@
   white-space: nowrap;
 }
 
+/* Term colours are generated per term (ui/term-colours.ts) and set as --term-colour. */
+.term-swatch {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.2rem;
+  margin-right: 0.35rem;
+  vertical-align: -0.05rem;
+  background: var(--term-colour);
+}
+
 /* Stacked fraction for half-integers, e.g. 3/2. */
 .fraction {
   white-space: nowrap;
@@ -237,6 +251,17 @@
 }
 .configurations-table .subshell-start {
   border-left: var(--bs-border-width) solid var(--app-border);
+}
+/*
+ * Bootstrap paints table cells through --bs-table-bg-state, which takes precedence over the
+ * stripes, so the tint replaces them instead of mixing with them.
+ */
+.configurations-table tr.term-tint > * {
+  --bs-table-bg-state: color-mix(
+    in srgb,
+    var(--term-colour) var(--term-tint-strength),
+    transparent
+  );
 }
 /* Bootstrap colours table cells through --bs-table-color-state, which takes precedence. */
 .configurations-table .occupancy-up {

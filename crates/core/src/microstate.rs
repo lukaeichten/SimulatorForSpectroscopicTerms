@@ -8,11 +8,17 @@ pub struct Microstate {
     /// Position of the microstate in the enumeration of all microstates (zero based).
     index: u64,
     subshells: Vec<SubshellState>,
+    /// Zero-based index into [`crate::Simulation::terms`] of the assigned term.
+    term: usize,
 }
 
 impl Microstate {
-    pub(crate) fn new(index: u64, subshells: Vec<SubshellState>) -> Self {
-        Self { index, subshells }
+    pub(crate) fn new(index: u64, subshells: Vec<SubshellState>, term: usize) -> Self {
+        Self {
+            index,
+            subshells,
+            term,
+        }
     }
 
     /// Returns the position of the microstate in the (unfiltered) enumeration of all microstates
@@ -20,6 +26,13 @@ impl Microstate {
     #[must_use]
     pub const fn index(&self) -> u64 {
         self.index
+    }
+
+    /// Returns the zero-based index into [`crate::Simulation::terms`] of the term the microstate
+    /// is assigned to (see [`crate::TermAssignment`]).
+    #[must_use]
+    pub const fn term(&self) -> usize {
+        self.term
     }
 
     /// Returns the states of the subshells, in the order of [`crate::SubshellKind::ALL`].

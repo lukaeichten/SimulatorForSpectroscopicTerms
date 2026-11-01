@@ -4,16 +4,18 @@ import {
   formatQuery,
   parseQuery,
   restrictTerms,
+  setMatch,
+  setView,
   toggleTerm,
   type SimulationQuery,
 } from "./simulation/query";
 import type { SimulatorService } from "./simulation/simulator-service";
 import { byId } from "./ui/dom";
-import { termText } from "./ui/format";
 import { ConfigurationForm } from "./ui/views/configuration-form";
 import { ConfigurationsView } from "./ui/views/configurations-view";
 import { NoticesView, type Notice } from "./ui/views/notices-view";
 import { PossibilitiesView } from "./ui/views/possibilities-view";
+import { TermDisplayControls } from "./ui/views/term-display-controls";
 import { TermsView } from "./ui/views/terms-view";
 
 /** How a rendered query is recorded in the browser history. */
@@ -30,6 +32,7 @@ export class App {
   private readonly form: ConfigurationForm;
   private readonly possibilities: PossibilitiesView;
   private readonly terms: TermsView;
+  private readonly termDisplay: TermDisplayControls;
   private readonly configurations: ConfigurationsView;
   private readonly notices: NoticesView;
   private query: SimulationQuery;
@@ -39,7 +42,9 @@ export class App {
     this.query = defaultQuery(kinds);
 
     this.form = new ConfigurationForm(byId("configuration-form", HTMLFormElement), kinds, {
-      onSimulate: (electrons) => this.navigate({ electrons, terms: [], page: 1 }),
+      // The term numbers belong to the previous configuration, but the display preferences
+      // (view and match) are kept because they apply to any configuration.
+      onSimulate: (electrons) => this.navigate({ ...this.query, electrons, terms: [], page: 1 }),
       onShare: () => this.copyLink(),
     });
     this.possibilities = new PossibilitiesView(byId("possibilities-body", HTMLTableSectionElement));
@@ -49,6 +54,14 @@ export class App {
       {
         onToggle: (term) => this.navigate(toggleTerm(this.query, term)),
         onClear: () => this.navigate({ ...this.query, terms: [], page: 1 }),
+      },
+    );
+    this.termDisplay = new TermDisplayControls(
+      byId("term-display", HTMLElement),
+      byId("terms-help", HTMLElement),
+      {
+        onViewChange: (view) => this.navigate(setView(this.query, view)),
+        onMatchChange: (match) => this.navigate(setMatch(this.query, match)),
       },
     );
     this.configurations = new ConfigurationsView(
@@ -99,9 +112,12 @@ export class App {
 
     const restricted = restrictTerms(requested, run.terms.length);
     notices.push(...restricted.problems.map((text): Notice => ({ level: "warning", text })));
-    const selected = restricted.query.terms;
+    const { terms: selected, view, match } = restricted.query;
+    // The colour view always lists everything; its selection only decides the highlighting.
+    const filterTerms = view === "filter" ? selected.map((term) => term - 1) : [];
     const page = run.microstatePage(
-      selected.map((term) => term - 1),
+      filterTerms,
+      match === "exact",
       restricted.query.page - 1,
       PAGE_SIZE,
     );
@@ -118,14 +134,9 @@ export class App {
     this.notices.render(notices);
     this.form.setElectrons(this.query.electrons);
     this.possibilities.render(run.summary);
-    this.terms.render(run.terms, selected);
-    this.configurations.render(
-      page,
-      selected.flatMap((term) => {
-        const info = run.terms[term - 1];
-        return info ? [termText(info)] : [];
-      }),
-    );
+    this.terms.render(run.terms, selected, view);
+    this.termDisplay.render(view, match);
+    this.configurations.render(page, { terms: run.terms, selected, view, match });
     document.title = `${this.configurationName()} – Simulator for spectroscopic terms`;
   }
 
